@@ -1,0 +1,14 @@
+server:
+  port: 4000
+
+mssql:
+  default:
+    host: http://127.0.0.1:8001/mssql2000/
+
+pgsql:
+  default:
+    host: http://127.0.0.1:8002/pgsql/
+
+mysql:
+  default:
+    host: http://127.0.0.1:8003/mysql/

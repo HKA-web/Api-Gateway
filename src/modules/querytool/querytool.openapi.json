@@ -1,0 +1,133 @@
+{
+  "paths": {
+	"/querytool/mssql/": {
+      "post": {
+		"tags": [
+          "SQL Server 2000 Database Tool"
+        ],
+        "summary": "Run raw SQL on SQL Server 2000",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sql": { "type": "string", "example": "SELECT * FROM sysobjects" },
+                  "skip": { "type": "integer", "example": 0 },
+                  "take": { "type": "integer", "example": 10 }
+                },
+                "required": ["sql"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "success" },
+                    "skip": { "type": "integer", "example": 0 },
+                    "take": { "type": "integer", "example": 10 },
+                    "totalCount": { "type": "integer", "example": 42 },
+                    "data": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/querytool/pgsql/": {
+      "post": {
+		"tags": [
+          "PgSQL Database Tool"
+        ],
+        "summary": "Run raw SQL on PostgreSQL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sql": { "type": "string", "example": "SELECT * FROM sc_mst.karyawan" },
+                  "skip": { "type": "integer", "example": 0 },
+                  "take": { "type": "integer", "example": 10 }
+                },
+                "required": ["sql"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "success" },
+                    "skip": { "type": "integer", "example": 0 },
+                    "take": { "type": "integer", "example": 10 },
+                    "totalCount": { "type": "integer", "example": 42 },
+                    "data": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/querytool/mysql/": {
+      "post": {
+		"tags": [
+          "MySQL Database Tool"
+        ],
+        "summary": "Run raw SQL on MySQL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sql": { "type": "string", "example": "SELECT * FROM db" },
+                  "skip": { "type": "integer", "example": 0 },
+                  "take": { "type": "integer", "example": 10 }
+                },
+                "required": ["sql"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "success" },
+                    "skip": { "type": "integer", "example": 0 },
+                    "take": { "type": "integer", "example": 10 },
+                    "totalCount": { "type": "integer", "example": 42 },
+                    "data": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

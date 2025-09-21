@@ -1,0 +1,29 @@
+{
+  "paths": {
+    "/hello": {
+      "get": {
+		"tags": [
+          "Sample"
+        ],
+        "summary": "Say hello",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
