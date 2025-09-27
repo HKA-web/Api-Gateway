@@ -5,61 +5,64 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueryToolService = void 0;
 const axios_1 = __importDefault(require("axios"));
-const transform_1 = require("../../utils/transform");
-const config_1 = __importDefault(require("../../utils/config"));
+const config_1 = require("../../utils/config");
+const redisCache_1 = require("../../utils/redisCache");
 class QueryToolService {
-    // SQL Server 2000 (relay ke Python microservice)
+    // SQL Server → pakai Redis
     async runMssqlQuery(sql, skip = 0, take = 100) {
-        const response = await axios_1.default.post(`${config_1.default.mssql.default.host}query`, {
-            sql, // pakai 'sql' sesuai microservice
-            skip,
-            take
-        });
+        const useRedis = true;
+        const cacheKey = (0, redisCache_1.getCacheKey)(sql, skip, take, "mssql");
+        const cached = await (0, redisCache_1.tryGetCache)(cacheKey, useRedis);
+        if (cached)
+            return { source: "redis", ...cached };
+        const response = await axios_1.default.post(`${config_1.config.mssql.default.host}query`, { sql, skip, take });
         const rows = response.data.rows;
         if (!rows)
             throw new Error("No rows returned from SQL Server");
+        const result = {
+            message: "success",
+            skip,
+            take,
+            totalCount: response.data.totalCount ?? rows.length,
+            data: rows
+        };
+        await (0, redisCache_1.setCache)(cacheKey, result, useRedis);
+        return { source: "backend", ...result };
+    }
+    // PostgreSQL → pakai Redis
+    async runPgQuery(sql, skip = 0, take = 100) {
+        const useRedis = true;
+        const cacheKey = (0, redisCache_1.getCacheKey)(sql, skip, take, "pgsql");
+        const cached = await (0, redisCache_1.tryGetCache)(cacheKey, useRedis);
+        if (cached)
+            return { source: "redis", ...cached };
+        const response = await axios_1.default.post(`${config_1.config.pgsql.default.host}query`, { sql, skip, take });
+        const rows = response.data.rows;
+        if (!rows)
+            throw new Error("No rows returned from PostgreSQL");
+        const result = {
+            message: "success",
+            skip,
+            take,
+            totalCount: response.data.totalCount ?? rows.length,
+            data: rows
+        };
+        await (0, redisCache_1.setCache)(cacheKey, result, useRedis);
+        return { source: "backend", ...result };
+    }
+    // MySQL → skip Redis
+    async runMysqlQuery(sql, skip = 0, take = 100) {
+        const response = await axios_1.default.post(`${config_1.config.mysql.default.host}query`, { sql, skip, take });
+        const rows = response.data.rows;
+        if (!rows)
+            throw new Error("No rows returned from MySQL");
         return {
             message: "success",
             skip,
             take,
             totalCount: response.data.totalCount ?? rows.length,
             data: rows,
-        };
-    }
-    // PostgreSQL
-    async runPgQuery(sql, skip = 0, take = 100) {
-        const response = await axios_1.default.post(`${config_1.default.pgsql.default.host}query`, {
-            sql, // pakai 'sql' sesuai microservice
-            skip,
-            take
-        });
-        const rows = response.data.rows;
-        if (!rows)
-            throw new Error("No rows returned from SQL Server");
-        return {
-            message: "success",
-            skip,
-            take,
-            totalCount: response.data.totalCount ?? rows.length,
-            data: (0, transform_1.trimStrings)(rows),
-        };
-    }
-    // MySQL
-    async runMysqlQuery(sql, skip = 0, take = 100) {
-        const response = await axios_1.default.post(`${config_1.default.mysql.default.host}query`, {
-            sql, // pakai 'sql' sesuai microservice
-            skip,
-            take
-        });
-        const rows = response.data.rows;
-        if (!rows)
-            throw new Error("No rows returned from SQL Server");
-        return {
-            message: "success",
-            skip,
-            take,
-            totalCount: response.data.totalCount ?? rows.length,
-            data: (0, transform_1.trimStrings)(rows),
+            source: "backend"
         };
     }
 }

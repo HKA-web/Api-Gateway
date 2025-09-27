@@ -9,21 +9,20 @@ export function loadRoutes(app: Express) {
     const modulePath = path.join(modulesPath, moduleName);
 
     if (fs.lstatSync(modulePath).isDirectory()) {
-      // Cari route file sesuai nama module
-      const routeFile = path.join(modulePath, `${moduleName}.routes.ts`);
+      // Cari file route
+      const routeFileTs = path.join(modulePath, `${moduleName}.routes.ts`);
       const routeFileJs = path.join(modulePath, `${moduleName}.routes.js`);
 
       let routes;
-      if (fs.existsSync(routeFile)) {
-        routes = require(routeFile).default;
+      if (fs.existsSync(routeFileTs)) {
+        routes = require(routeFileTs).default;
       } else if (fs.existsSync(routeFileJs)) {
         routes = require(routeFileJs).default;
       }
 
       if (routes) {
-        const prefix = `/${moduleName}`;
-        app.use(prefix, routes);
-        console.log(`✅ Loaded ${moduleName} routes at ${prefix}`);
+        app.use(routes); // ⬅️ tanpa prefix otomatis
+        console.log(`✅ Loaded ${moduleName} routes`);
       }
     }
   });

@@ -1,16 +1,17 @@
 import { Router } from "express";
 import { QueryToolController } from "./querytool.controller";
+import { jwtAuth } from "../../middlewares/jwtAuth";
 
 const router = Router();
 const controller = new QueryToolController();
 
 // SQL Server generic query
-router.post("/mssql", controller.runMssqlQuery.bind(controller));
+router.post("/mssql", jwtAuth , controller.runMssqlQuery.bind(controller));
 
 // PostgreSQL
-router.post("/pgsql", controller.runPgQuery.bind(controller));
+router.post("/pgsql", jwtAuth , controller.runPgQuery.bind(controller));
 
 // MySQL
-router.post("/mysql", controller.runMysqlQuery.bind(controller));
+router.post("/mysql", jwtAuth, controller.runMysqlQuery.bind(controller));
 
 export default router;

@@ -1,11 +1,30 @@
 {
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Database Query Tools",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
   "paths": {
-	"/querytool/mssql/": {
+    "/mssql/": {
       "post": {
-		"tags": [
+        "tags": [
           "SQL Server 2000 Database Tool"
         ],
         "summary": "Run raw SQL on SQL Server 2000",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -43,12 +62,17 @@
         }
       }
     },
-    "/querytool/pgsql/": {
+    "/pgsql/": {
       "post": {
-		"tags": [
+        "tags": [
           "PgSQL Database Tool"
         ],
         "summary": "Run raw SQL on PostgreSQL",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -86,12 +110,17 @@
         }
       }
     },
-    "/querytool/mysql/": {
+    "/mysql/": {
       "post": {
-		"tags": [
+        "tags": [
           "MySQL Database Tool"
         ],
         "summary": "Run raw SQL on MySQL",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {

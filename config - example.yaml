@@ -19,3 +19,8 @@ redis:
   password: null        # bisa diisi jika Redis pakai password
   db: 0
   ttl: 30               # default TTL untuk cache (detik)
+  
+jwt_access: "rahasia-access"
+jwt_refresh_secret: "rahasia-refresh"
+tokenduration: "5m" # m (minute)
+refreshduration: "1d" # d (day)

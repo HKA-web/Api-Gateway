@@ -54,7 +54,6 @@ export class QueryToolService {
 
   // MySQL → skip Redis
   async runMysqlQuery(sql: string, skip = 0, take = 100) {
-    const useRedis = false;
     const response = await axios.post(`${config.mysql.default.host}query`, { sql, skip, take });
     const rows = response.data.rows;
     if (!rows) throw new Error("No rows returned from MySQL");
