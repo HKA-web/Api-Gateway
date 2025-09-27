@@ -1,67 +1,71 @@
 import axios from "axios";
-import { trimStrings } from "../../utils/transform";
-import config from "../../utils/config";
+import { config } from "../../utils/config";
+import { getCacheKey, setCache, tryGetCache } from "../../utils/redisCache";
 
 export class QueryToolService {
 
-  // SQL Server 2000 (relay ke Python microservice)
+  // SQL Server → pakai Redis
   async runMssqlQuery(sql: string, skip = 0, take = 100) {
-	  const response = await axios.post(`${config.mssql.default.host}query`, {
-		sql,   // pakai 'sql' sesuai microservice
-		skip,
-		take
-	  });
+    const useRedis = true;
+    const cacheKey = getCacheKey(sql, skip, take, "mssql");
 
-	  const rows = response.data.rows;
-	  if (!rows) throw new Error("No rows returned from SQL Server");
+    const cached = await tryGetCache(cacheKey, useRedis);
+    if (cached) return { source: "redis", ...cached };
 
-	  return {
-		message: "success",
-		skip,
-		take,
-		totalCount: response.data.totalCount ?? rows.length,
-		data: rows,
-	  };
-	}
+    const response = await axios.post(`${config.mssql.default.host}query`, { sql, skip, take });
+    const rows = response.data.rows;
+    if (!rows) throw new Error("No rows returned from SQL Server");
 
-  // PostgreSQL
+    const result = {
+      message: "success",
+      skip,
+      take,
+      totalCount: response.data.totalCount ?? rows.length,
+      data: rows
+    };
+
+    await setCache(cacheKey, result, useRedis);
+    return { source: "backend", ...result };
+  }
+
+  // PostgreSQL → pakai Redis
   async runPgQuery(sql: string, skip = 0, take = 100) {
-	  const response = await axios.post(`${config.pgsql.default.host}query`, {
-		sql,   // pakai 'sql' sesuai microservice
-		skip,
-		take
-	  });
+    const useRedis = true;
+    const cacheKey = getCacheKey(sql, skip, take, "pgsql");
 
-	  const rows = response.data.rows;
-	  if (!rows) throw new Error("No rows returned from SQL Server");
+    const cached = await tryGetCache(cacheKey, useRedis);
+    if (cached) return { source: "redis", ...cached };
 
-	  return {
-		message: "success",
-		skip,
-		take,
-		totalCount: response.data.totalCount ?? rows.length,
-		data: trimStrings(rows),
-	  };
-	}
+    const response = await axios.post(`${config.pgsql.default.host}query`, { sql, skip, take });
+    const rows = response.data.rows;
+    if (!rows) throw new Error("No rows returned from PostgreSQL");
 
-  // MySQL
+    const result = {
+      message: "success",
+      skip,
+      take,
+      totalCount: response.data.totalCount ?? rows.length,
+      data: rows
+    };
+
+    await setCache(cacheKey, result, useRedis);
+    return { source: "backend", ...result };
+  }
+
+  // MySQL → skip Redis
   async runMysqlQuery(sql: string, skip = 0, take = 100) {
-	  const response = await axios.post(`${config.mysql.default.host}query`, {
-		sql,   // pakai 'sql' sesuai microservice
-		skip,
-		take
-	  });
+    const useRedis = false;
+    const response = await axios.post(`${config.mysql.default.host}query`, { sql, skip, take });
+    const rows = response.data.rows;
+    if (!rows) throw new Error("No rows returned from MySQL");
 
-	  const rows = response.data.rows;
-	  if (!rows) throw new Error("No rows returned from SQL Server");
-
-	  return {
-		message: "success",
-		skip,
-		take,
-		totalCount: response.data.totalCount ?? rows.length,
-		data: trimStrings(rows),
-	  };
-	}
-	
+    return {
+      message: "success",
+      skip,
+      take,
+      totalCount: response.data.totalCount ?? rows.length,
+      data: rows,
+      source: "backend"
+    };
+  }
 }

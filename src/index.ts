@@ -4,7 +4,7 @@ import { logger } from "./middlewares/logger";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import path from "path";
-import config from "./utils/config";
+import { config } from "./utils/config";
 import { loadRoutes } from "./utils/routeLoader";
 
 const app = express();

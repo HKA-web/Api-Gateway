@@ -16,6 +16,13 @@ Fungsi utama API Gateway
 
 # Perhatian
 
+Clone Project:
+```
+git clone https://github.com/HKA-web/api-gateway.git
+git submodule update --init --recursive
+git pull --recurse-submodules
+```
+
 Rubah nama config - example.yaml > config.yaml
    
 # Pengaturan Ngrok

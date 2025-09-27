@@ -12,3 +12,10 @@ pgsql:
 mysql:
   default:
     host: http://127.0.0.1:8003/mysql/
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: null        # bisa diisi jika Redis pakai password
+  db: 0
+  ttl: 30               # default TTL untuk cache (detik)

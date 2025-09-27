@@ -82,12 +82,29 @@ goto MENU
 
 :BUILD
 echo.
+if exist "%ROOT%dist" (
+    echo Menghapus folder "%ROOT%dist" ...
+    rd /s /q "%ROOT%dist" 2>nul
+    if errorlevel 1 (
+        echo [ERROR] Gagal menghapus "%ROOT%dist"
+        echo Pastikan tidak ada file/antarmuka yang menahan folder tersebut.
+        pause
+        goto MENU
+    ) else (
+        echo Berhasil menghapus folder dist.
+    )
+) else (
+    echo Folder dist tidak ditemukan, lanjut...
+)
+
+echo.
 echo Memulai proses build (yarn build)...
 echo -------------------------------------------------
 call :run_yarn build
 echo.
 pause
 goto MENU
+
 
 :END
 echo Keluar dari script...
