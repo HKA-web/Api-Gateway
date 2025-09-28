@@ -1,6 +1,17 @@
+jwt_access: rahasia-access
+jwt_refresh_secret: rahasia-refresh
+tokenduration: 5m #menit
+refreshduration: 1d #hari
+
+circuitBreaker:
+  timeout: 10000                 # ms
+  errorThresholdPercentage: 50  # %
+  resetTimeout: 5000             # ms
+  retries: 2                     # retry sebelum dianggap gagal
+  
 server:
   port: 4000
-
+  
 mssql:
   default:
     host: http://127.0.0.1:8001/mssql2000/
@@ -18,9 +29,4 @@ redis:
   port: 6379
   password: null        # bisa diisi jika Redis pakai password
   db: 0
-  ttl: 30               # default TTL untuk cache (detik)
-  
-jwt_access: "rahasia-access"
-jwt_refresh_secret: "rahasia-refresh"
-tokenduration: "5m" # m (minute)
-refreshduration: "1d" # d (day)
+  ttl: 300               # default TTL untuk cache (detik)

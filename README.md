@@ -122,3 +122,11 @@ api-gateway/
    | dist/          | <-- hasil build TS (production)
    +----------------+
 ```
+
+## Alur
+
+1. Gateway kirim request ke backend (axios + breaker)
+2. Timeout 5 (*Sesuai setup) detik → jika backend lambat, langsung throw
+3. Retry 2x (*Sesuai setup) → jika masih gagal, throw error
+4. Circuit breaker track error rate → jika terlalu tinggi, buka breaker
+5. Client dapat response error (timeout / service unavailable)

@@ -133,6 +133,13 @@
   dependencies:
     undici-types "~7.12.0"
 
+"@types/opossum@^8.1.9":
+  version "8.1.9"
+  resolved "https://registry.yarnpkg.com/@types/opossum/-/opossum-8.1.9.tgz#a6309691a3fee3d93452acbb0b7e1eb244724b17"
+  integrity sha512-Jm/tYxuJFefiwRYs+/EOsUP3ktk0c8siMgAHPLnA4PXF4wKghzcjqf88dY+Xii5jId5Txw4JV0FMKTpjbd7KJA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/pg@^8.15.5":
   version "8.15.5"
   resolved "https://registry.yarnpkg.com/@types/pg/-/pg-8.15.5.tgz#ef43e0f33b62dac95cae2f042888ec7980b30c09"
@@ -811,6 +818,11 @@ once@^1.4.0:
   integrity sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==
   dependencies:
     wrappy "1"
+
+opossum@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/opossum/-/opossum-9.0.0.tgz#0f8050377d16324f5bf17d771ea8f6821375e209"
+  integrity sha512-K76U0QkxOfUZamneQuzz+AP0fyfTJcCplZ2oZL93nxeupuJbN4s6uFNbmVCt4eWqqGqRnnowdFuBicJ1fLMVxw==
 
 pako@^2.1.0:
   version "2.1.0"

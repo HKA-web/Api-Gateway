@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { QueryToolController } from "./querytool.controller";
 import { jwtAuth } from "../../middlewares/jwtAuth";
+import { QueryToolController } from "./querytool.controller";
 
 const router = Router();
 const controller = new QueryToolController();
