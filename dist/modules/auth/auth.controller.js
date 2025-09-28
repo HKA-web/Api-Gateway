@@ -16,5 +16,15 @@ class AuthController {
             res.status(401).json({ message: err.message });
         }
     }
+    async refresh(req, res) {
+        const { refreshToken } = req.body;
+        try {
+            const result = this.authService.refresh(refreshToken);
+            res.json(result);
+        }
+        catch (err) {
+            res.status(401).json({ message: err.message }); // biar feedback jelas
+        }
+    }
 }
 exports.AuthController = AuthController;

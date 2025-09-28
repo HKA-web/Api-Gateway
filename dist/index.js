@@ -3,12 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const logger_1 = require("./middlewares/logger");
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const config_1 = require("./utils/config");
 const routeLoader_1 = require("./utils/routeLoader");
 const app = (0, express_1.default)();

@@ -8,10 +8,10 @@ class QueryToolController {
     }
     async runMssqlQuery(req, res) {
         try {
-            const { sql, skip = 0, take = 100 } = req.body;
+            const { sql, skip = 0, take = 100, connection = "default" } = req.body;
             if (!sql)
                 return res.status(400).json({ message: "sql is required" });
-            const result = await this.service.runMssqlQuery(sql, skip, take);
+            const result = await this.service.runMssqlQuery(sql, skip, take, connection);
             res.json(result);
         }
         catch (err) {
@@ -20,10 +20,10 @@ class QueryToolController {
     }
     async runPgQuery(req, res) {
         try {
-            const { sql, skip = 0, take = 100 } = req.body;
+            const { sql, skip = 0, take = 100, connection = "default" } = req.body;
             if (!sql)
                 return res.status(400).json({ message: "sql is required" });
-            const result = await this.service.runPgQuery(sql, skip, take);
+            const result = await this.service.runPgQuery(sql, skip, take, connection);
             res.json(result);
         }
         catch (err) {
@@ -32,10 +32,10 @@ class QueryToolController {
     }
     async runMysqlQuery(req, res) {
         try {
-            const { sql, skip = 0, take = 100 } = req.body;
+            const { sql, skip = 0, take = 100, connection = "default" } = req.body;
             if (!sql)
                 return res.status(400).json({ message: "sql is required" });
-            const result = await this.service.runMysqlQuery(sql, skip, take);
+            const result = await this.service.runMysqlQuery(sql, skip, take, connection);
             res.json(result);
         }
         catch (err) {

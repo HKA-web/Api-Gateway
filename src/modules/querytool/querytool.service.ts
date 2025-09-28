@@ -16,15 +16,18 @@ export class QueryToolService {
     }
   );
 
-  async runMssqlQuery(sql: string, skip = 0, take = 100) {
+  async runMssqlQuery(sql: string, skip = 0, take = 100, connectionName: string = "default") {
     const useRedis = true;
-    const cacheKey = getCacheKey(sql, skip, take, "mssql");
+    const cacheKey = getCacheKey(sql, skip, take, `mssql:${connectionName}`);
 
     const cached = await tryGetCache(cacheKey, useRedis);
     if (cached) return { source: "redis", ...cached };
 
+    const host = config.mssql[connectionName]?.host;
+    if (!host) throw new Error(`MsSQL connection '${connectionName}' not found in config`);
+
     const response = await this.callBackendWithBreaker.fire(
-      `${config.mssql.default.host}query`,
+      `${host}query`,
       { sql, skip, take }
     );
 
@@ -43,15 +46,18 @@ export class QueryToolService {
     return { source: "backend", ...result };
   }
 
-  async runPgQuery(sql: string, skip = 0, take = 100) {
+  async runPgQuery(sql: string, skip = 0, take = 100, connectionName: string = "default") {
     const useRedis = true;
-    const cacheKey = getCacheKey(sql, skip, take, "pgsql");
+    const cacheKey = getCacheKey(sql, skip, take, `pgsql:${connectionName}`);
 
     const cached = await tryGetCache(cacheKey, useRedis);
     if (cached) return { source: "redis", ...cached };
 
+    const host = config.pgsql[connectionName]?.host;
+    if (!host) throw new Error(`PgSQL connection '${connectionName}' not found in config`);
+
     const response = await this.callBackendWithBreaker.fire(
-      `${config.pgsql.default.host}query`,
+      `${host}query`,
       { sql, skip, take }
     );
 
@@ -70,22 +76,33 @@ export class QueryToolService {
     return { source: "backend", ...result };
   }
 
-  async runMysqlQuery(sql: string, skip = 0, take = 100) {
+  async runMysqlQuery(sql: string, skip = 0, take = 100, connectionName: string = "default") {
+    const useRedis = true;
+    const cacheKey = getCacheKey(sql, skip, take, `mysql:${connectionName}`);
+
+    const cached = await tryGetCache(cacheKey, useRedis);
+    if (cached) return { source: "redis", ...cached };
+
+    const host = config.mysql[connectionName]?.host;
+    if (!host) throw new Error(`MySQL connection '${connectionName}' not found in config`);
+
     const response = await this.callBackendWithBreaker.fire(
-      `${config.mysql.default.host}query`,
+      `${host}query`,
       { sql, skip, take }
     );
 
     const rows = response.rows;
     if (!rows) throw new Error("No rows returned from MySQL");
 
-    return {
+    const result = {
       message: "success",
       skip,
       take,
       totalCount: response.totalCount ?? rows.length,
-      data: rows,
-      source: "backend"
+      data: rows
     };
+
+    await setCache(cacheKey, result, useRedis);
+    return { source: "backend", ...result };
   }
 }

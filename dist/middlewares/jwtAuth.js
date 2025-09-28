@@ -5,18 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtAuth = jwtAuth;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const SECRET = process.env.JWT_SECRET || "rahasia-super-aman";
+const ACCESS_SECRET = process.env.JWT_SECRET || "rahasia-access";
 function jwtAuth(req, res, next) {
     const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1]; // format: Bearer xxx
-    if (!token) {
+    const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
+    if (!token)
         return res.status(401).json({ message: "Token missing" });
-    }
-    jsonwebtoken_1.default.verify(token, SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ message: "Token invalid" });
-        }
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, ACCESS_SECRET);
         req.user = decoded;
         next();
-    });
+    }
+    catch {
+        return res.status(403).json({ message: "Token invalid or expired" });
+    }
 }

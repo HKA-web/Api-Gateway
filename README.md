@@ -72,10 +72,13 @@ api-gateway/
 │   │
 │   ├── middlewares/
 │   │   └── logger.ts
+│   │   └── jwtAuth.ts
 │   │
 │   ├── utils/
-│   │   ├── transform.ts                # misal trimStrings
 │   │   └── config.ts                   # env/config global
+│   │   └── routeLoader.ts
+│   │   └── circuitBreaker.ts
+│   │   └── redisCache.ts
 │   │
 │   ├── index.ts                        # entry point
 │   └── generate-openapi.ts             # generate-openapi
@@ -90,25 +93,30 @@ api-gateway/
              | src/generate-openapi.ts |
              +-------------------+
                       |
-        ---------------------------------
-        |                               |
-        v                               v
-+----------------+               +----------------+
-| modules/querytool |             | middlewares/logger.ts |
-|------------------|             +----------------+
-| querytool.controller.ts         (logging / request)  
-| querytool.service.ts
-| querytool.routes.ts  <-- router auto-loaded
-| querytool.openapi.json  <-- OpenAPI spec module
-+----------------+
+        -------------------------------------------------------------------------
+        |                               |										|
+        v                               v										v	
++--------------------+            +-----------------------+			+-----------------------+
+| modules/querytool  |            | middlewares/logger	  | 		| utils/config			|
+|					 |			  | middlewares/jwtAuth	  |			| utils/redisCache		|						
+|					 |			  |        				  |			| utils/circuitBreaker	|							
+|					 |			  |        				  |			| utils/routeLoader		|						
+|--------------------|            +-----------------------+			+-----------------------+
+		|
+		v
+| querytool.controller.ts       <-- logging / request
+| querytool.service.ts			<-- service
+| querytool.routes.ts  			<-- router auto-loaded
+| querytool.openapi.json  		<-- OpenAPI spec module
++-------------------------+
         |
         | service layer
         v
    +------------+
    | DB Service |
-   | (MSSQL,   |
-   | PostgreSQL|
-   | MySQL)    |
+   | (MSSQL,   	|
+   | PostgreSQL	|
+   | MySQL)    	|
    +------------+
         ^
         |

@@ -11,20 +11,19 @@ function loadRoutes(app) {
     fs_1.default.readdirSync(modulesPath).forEach((moduleName) => {
         const modulePath = path_1.default.join(modulesPath, moduleName);
         if (fs_1.default.lstatSync(modulePath).isDirectory()) {
-            // Cari route file sesuai nama module
-            const routeFile = path_1.default.join(modulePath, `${moduleName}.routes.ts`);
+            // Cari file route
+            const routeFileTs = path_1.default.join(modulePath, `${moduleName}.routes.ts`);
             const routeFileJs = path_1.default.join(modulePath, `${moduleName}.routes.js`);
             let routes;
-            if (fs_1.default.existsSync(routeFile)) {
-                routes = require(routeFile).default;
+            if (fs_1.default.existsSync(routeFileTs)) {
+                routes = require(routeFileTs).default;
             }
             else if (fs_1.default.existsSync(routeFileJs)) {
                 routes = require(routeFileJs).default;
             }
             if (routes) {
-                const prefix = `/${moduleName}`;
-                app.use(prefix, routes);
-                console.log(`✅ Loaded ${moduleName} routes at ${prefix}`);
+                app.use(routes); // ⬅️ tanpa prefix otomatis
+                console.log(`✅ Loaded ${moduleName} routes`);
             }
         }
     });

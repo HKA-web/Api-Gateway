@@ -6,7 +6,9 @@
   "author": "mashakim360 <mashakim360@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node src/generate-openapi.ts && ts-node src/index.ts",
+    "dev": "nodemon ts-node src/index.ts",
+    "generate": "ts-node src/generate-openapi.ts",
+    "invalidate": "ts-node src/utils/clearRedis.ts all",
     "build": "tsc",
     "start": "node dist/index.js"
   },
@@ -34,6 +36,7 @@
     "@types/opossum": "^8.1.9",
     "@types/pg": "^8.15.5",
     "@types/swagger-ui-express": "^4.1.8",
+    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }

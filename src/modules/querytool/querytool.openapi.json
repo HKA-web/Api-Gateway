@@ -16,15 +16,9 @@
   "paths": {
     "/mssql/": {
       "post": {
-        "tags": [
-          "SQL Server 2000 Database Tool"
-        ],
+        "tags": ["SQL Server 2000 Database Tool"],
         "summary": "Run raw SQL on SQL Server 2000",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -34,7 +28,8 @@
                 "properties": {
                   "sql": { "type": "string", "example": "SELECT * FROM sysobjects" },
                   "skip": { "type": "integer", "example": 0 },
-                  "take": { "type": "integer", "example": 10 }
+                  "take": { "type": "integer", "example": 10 },
+                  "connection": { "type": "string", "example": "default", "description": "Connection endpoint to use (server-side, optional)" }
                 },
                 "required": ["sql"]
               }
@@ -64,15 +59,9 @@
     },
     "/pgsql/": {
       "post": {
-        "tags": [
-          "PgSQL Database Tool"
-        ],
+        "tags": ["PgSQL Database Tool"],
         "summary": "Run raw SQL on PostgreSQL",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -82,7 +71,8 @@
                 "properties": {
                   "sql": { "type": "string", "example": "SELECT * FROM sc_mst.karyawan" },
                   "skip": { "type": "integer", "example": 0 },
-                  "take": { "type": "integer", "example": 10 }
+                  "take": { "type": "integer", "example": 10 },
+                  "connection": { "type": "string", "example": "default", "description": "Connection endpoint to use (server-side, optional)" }
                 },
                 "required": ["sql"]
               }
@@ -112,15 +102,9 @@
     },
     "/mysql/": {
       "post": {
-        "tags": [
-          "MySQL Database Tool"
-        ],
+        "tags": ["MySQL Database Tool"],
         "summary": "Run raw SQL on MySQL",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -130,7 +114,8 @@
                 "properties": {
                   "sql": { "type": "string", "example": "SELECT * FROM db" },
                   "skip": { "type": "integer", "example": 0 },
-                  "take": { "type": "integer", "example": 10 }
+                  "take": { "type": "integer", "example": 10 },
+                  "connection": { "type": "string", "example": "default", "description": "Connection endpoint to use (server-side, optional)" }
                 },
                 "required": ["sql"]
               }

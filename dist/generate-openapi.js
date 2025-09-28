@@ -8,6 +8,15 @@ const path_1 = __importDefault(require("path"));
 const output = {
     openapi: "3.0.0",
     info: { title: "API Gateway", version: "1.0.0" },
+    components: {
+        securitySchemes: {
+            bearerAuth: {
+                type: "http",
+                scheme: "bearer",
+                bearerFormat: "JWT"
+            }
+        }
+    },
     paths: {}
 };
 const modulesPath = path_1.default.join(__dirname, "modules");
@@ -16,7 +25,10 @@ fs_1.default.readdirSync(modulesPath).forEach((mod) => {
     const filePath = path_1.default.join(modulesPath, mod, `${mod}.openapi.json`);
     if (fs_1.default.existsSync(filePath)) {
         const content = JSON.parse(fs_1.default.readFileSync(filePath, "utf-8"));
-        Object.assign(output.paths, content.paths);
+        // merge tiap path, tapi biarkan masing2 file yang atur security
+        Object.entries(content.paths).forEach(([p, def]) => {
+            output.paths[p] = def;
+        });
         console.log(`✅ Loaded OpenAPI for module: ${mod}`);
     }
     else {

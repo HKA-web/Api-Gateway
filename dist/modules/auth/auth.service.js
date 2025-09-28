@@ -5,19 +5,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const SECRET = process.env.JWT_SECRET || "rahasia-super-aman";
-// Dummy user (nanti bisa ganti ke DB)
+const config_1 = require("../../utils/config");
+const ACCESS_SECRET = config_1.config.jwt_access || "rahasia-access";
+const REFRESH_SECRET = config_1.config.jwt_refresh_secret || "rahasia-refresh";
+// Dummy user
 const DUMMY_USER = {
     username: "admin",
     password: "password123",
 };
 class AuthService {
-    async login(username, password) {
+    login(username, password) {
         if (username === DUMMY_USER.username && password === DUMMY_USER.password) {
-            const token = jsonwebtoken_1.default.sign({ username }, SECRET, { expiresIn: "1h" });
-            return { token };
+            const accessToken = jsonwebtoken_1.default.sign({ username }, ACCESS_SECRET, { expiresIn: config_1.config.tokenduration || "15m" });
+            const refreshToken = jsonwebtoken_1.default.sign({ username }, REFRESH_SECRET, { expiresIn: config_1.config.refreshduration || "7d" });
+            // Idealnya simpan refreshToken di DB/Redis biar bisa di-revoke
+            return { accessToken, refreshToken };
         }
         throw new Error("Invalid credentials");
+    }
+    refresh(refreshToken) {
+        try {
+            const decoded = jsonwebtoken_1.default.verify(refreshToken, REFRESH_SECRET);
+            const newAccessToken = jsonwebtoken_1.default.sign({ username: decoded.username }, ACCESS_SECRET, { expiresIn: "15m" });
+            return { accessToken: newAccessToken };
+        }
+        catch (err) {
+            // Jangan balikin Invalid credentials, tapi lebih jelas
+            throw new Error("Invalid or expired refresh token");
+        }
+    }
+    verifyAccess(token) {
+        try {
+            return jsonwebtoken_1.default.verify(token, ACCESS_SECRET);
+        }
+        catch {
+            throw new Error("Access token invalid or expired");
+        }
     }
 }
 exports.AuthService = AuthService;
