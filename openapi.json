@@ -174,12 +174,12 @@
         }
       }
     },
-    "/mssql/": {
+    "/mssql/query": {
       "post": {
         "tags": [
           "SQL Server 2000 Database Tool"
         ],
-        "summary": "Run raw SQL on SQL Server 2000",
+        "summary": "Run SELECT query on SQL Server 2000",
         "security": [
           {
             "bearerAuth": []
@@ -206,8 +206,7 @@
                   },
                   "connection": {
                     "type": "string",
-                    "example": "default",
-                    "description": "Connection endpoint to use (server-side, optional)"
+                    "example": "default"
                   }
                 },
                 "required": [
@@ -225,9 +224,13 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
                     "message": {
                       "type": "string",
-                      "example": "success"
+                      "example": ""
                     },
                     "skip": {
                       "type": "integer",
@@ -246,6 +249,191 @@
                       "items": {
                         "type": "object"
                       }
+                    },
+                    "columns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "id",
+                        "name",
+                        "created_at"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mssql/insert": {
+      "post": {
+        "tags": [
+          "SQL Server 2000 Database Tool"
+        ],
+        "summary": "Run INSERT query on SQL Server 2000",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sql": {
+                    "type": "string",
+                    "example": "INSERT INTO users (name,email) VALUES ('Andi','andi@test.com')"
+                  },
+                  "connection": {
+                    "type": "string",
+                    "example": "default"
+                  }
+                },
+                "required": [
+                  "sql"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Insert success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "insert success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mssql/update": {
+      "post": {
+        "tags": [
+          "SQL Server 2000 Database Tool"
+        ],
+        "summary": "Run UPDATE query on SQL Server 2000",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sql": {
+                    "type": "string",
+                    "example": "UPDATE users SET email='new@test.com' WHERE id=1"
+                  },
+                  "connection": {
+                    "type": "string",
+                    "example": "default"
+                  }
+                },
+                "required": [
+                  "sql"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "update success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mssql/delete": {
+      "post": {
+        "tags": [
+          "SQL Server 2000 Database Tool"
+        ],
+        "summary": "Run DELETE query on SQL Server 2000",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sql": {
+                    "type": "string",
+                    "example": "DELETE FROM users WHERE id=1"
+                  },
+                  "connection": {
+                    "type": "string",
+                    "example": "default"
+                  }
+                },
+                "required": [
+                  "sql"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Delete success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "delete success"
                     }
                   }
                 }

@@ -15,7 +15,51 @@ class QueryToolController {
             res.json(result);
         }
         catch (err) {
-            res.status(500).json({ message: err.message });
+            const status = err?.statusCode ?? 500;
+            const message = err?.message ?? "Unexpected error";
+            res.status(status).json({ statusCode: status, message });
+        }
+    }
+    async runMssqlInsert(req, res) {
+        try {
+            const { sql, connection = "default" } = req.body;
+            if (!sql)
+                return res.status(400).json({ message: "sql is required" });
+            const result = await this.service.runMssqlInsert(sql, connection);
+            res.json(result);
+        }
+        catch (err) {
+            const status = err?.statusCode ?? 500;
+            const message = err?.message ?? "Unexpected error";
+            res.status(status).json({ statusCode: status, message });
+        }
+    }
+    async runMssqlUpdate(req, res) {
+        try {
+            const { sql, connection = "default" } = req.body;
+            if (!sql)
+                return res.status(400).json({ message: "sql is required" });
+            const result = await this.service.runMssqlUpdate(sql, connection);
+            res.json(result);
+        }
+        catch (err) {
+            const status = err?.statusCode ?? 500;
+            const message = err?.message ?? "Unexpected error";
+            res.status(status).json({ statusCode: status, message });
+        }
+    }
+    async runMssqlDelete(req, res) {
+        try {
+            const { sql, connection = "default" } = req.body;
+            if (!sql)
+                return res.status(400).json({ message: "sql is required" });
+            const result = await this.service.runMssqlDelete(sql, connection);
+            res.json(result);
+        }
+        catch (err) {
+            const status = err?.statusCode ?? 500;
+            const message = err?.message ?? "Unexpected error";
+            res.status(status).json({ statusCode: status, message });
         }
     }
     async runPgQuery(req, res) {
