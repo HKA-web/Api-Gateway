@@ -2,9 +2,9 @@
 
 Fungsi utama API Gateway
 
-- Entry point tunggal
+- Entry point tunggal microservice
 
-- Semua client (web, mobile, aplikasi lain) cukup mengakses satu endpoint utama.
+- Semua client (web, mobile, aplikasi lain) cukup mengakses satu endpoint utama untuk berkomunikasi ke microservice.
 
 - Contoh: https://api.mycompany.com/ → gateway yang menentukan microservice mana yang dipanggil.
 
@@ -12,22 +12,22 @@ Fungsi utama API Gateway
 
 - Gateway meneruskan request ke microservice yang sesuai.
 
-- Bisa menyeimbangkan beban (load balancing) antar instance microservice.
-
 # Perhatian
 
-Clone Project:
+- Clone Project:
 ```
 git clone https://github.com/HKA-web/api-gateway.git
 git submodule update --init --recursive
 git pull --recurse-submodules
 ```
 
-Rubah nama config - example.yaml > config.yaml
+- Rubah nama config - example.yaml > config.yaml .
+
+- Klik 2x pada install.bat .
    
 # Pengaturan Ngrok
 
-Pastikan sudah menjalankan install.bat, kalau sudah buka file cwd.bat:
+Pastikan sudah menjalankan install.bat, kalau sudah klik 2x file cwd.bat:
 ```
 ===============================================
  Portable Node.js + Yarn Environment
@@ -49,7 +49,7 @@ Jalankan perintah ini:
 .\node_modules\.bin\ngrok config add-authtoken <YOUR-TOKEN>
 ```
 
-Jika sukses, jalankan ngrok.bat
+Jika sukses, jalankan ngrok dengan cara klik 2x ngrok.bat
 
 # Struktur Folder
 ```
@@ -131,7 +131,7 @@ api-gateway/
    +----------------+
 ```
 
-## Alur
+# Alur Kerja
 
 1. Gateway kirim request ke backend (axios + breaker)
 2. Timeout 5 (*Sesuai setup) detik → jika backend lambat, langsung throw
