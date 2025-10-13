@@ -19,7 +19,7 @@
         "tags": [
           "Authentication"
         ],
-        "summary": "Login to obtain JWT token",
+        "summary": "Login to obtain JWT tokens",
         "requestBody": {
           "required": true,
           "content": {
@@ -46,19 +46,28 @@
         },
         "responses": {
           "200": {
-            "description": "Login success, return access & refresh token",
+            "description": "Login success — returns access & refresh tokens",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "accessToken": {
+                    "message": {
                       "type": "string",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                      "example": "OK"
                     },
-                    "refreshToken": {
-                      "type": "string",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                        }
+                      }
                     }
                   }
                 }
@@ -75,6 +84,10 @@
                     "message": {
                       "type": "string",
                       "example": "Invalid credentials"
+                    },
+                    "data": {
+                      "type": "null",
+                      "example": null
                     }
                   }
                 }
@@ -111,15 +124,24 @@
         },
         "responses": {
           "200": {
-            "description": "New access token",
+            "description": "New access token issued",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "accessToken": {
+                    "message": {
                       "type": "string",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                      "example": "OK"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                        }
+                      }
                     }
                   }
                 }
@@ -136,6 +158,10 @@
                     "message": {
                       "type": "string",
                       "example": "Invalid or expired refresh token"
+                    },
+                    "data": {
+                      "type": "null",
+                      "example": null
                     }
                   }
                 }

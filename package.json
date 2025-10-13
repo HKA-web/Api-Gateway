@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "msgpack-lite": "^0.1.26",
     "mysql2": "^3.15.0",
+    "ngrok": "5.0.0-beta.2",
     "opossum": "^9.0.0",
     "pako": "^2.1.0",
     "pg": "^8.16.3",
