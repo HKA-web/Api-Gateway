@@ -27,20 +27,14 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string", "example": "OK" },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "accessToken": {
-                          "type": "string",
-                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                        },
-                        "refreshToken": {
-                          "type": "string",
-                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                        }
-                      }
-                    }
+                    "accessToken": {
+					  "type": "string",
+					  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+					},
+					"refreshToken": {
+					  "type": "string",
+					  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+					}
                   }
                 }
               }
@@ -56,10 +50,6 @@
                     "message": {
                       "type": "string",
                       "example": "Invalid credentials"
-                    },
-                    "data": {
-                      "type": "null",
-                      "example": null
                     }
                   }
                 }

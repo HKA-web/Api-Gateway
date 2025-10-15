@@ -8,15 +8,9 @@ export class AuthController {
     const { username, password } = req.body;
     try {
       const result = await this.authService.login(username, password);
-      res.json({
-        message: "OK",
-        data: result, // hasil dari service: { accessToken, refreshToken }
-      });
+      res.json(result);
     } catch (err: any) {
-      res.status(401).json({
-        message: err.message || "Login failed",
-        data: null,
-      });
+      res.status(401).json({ message: err.message });
     }
   }
 
@@ -24,15 +18,9 @@ export class AuthController {
     const { refreshToken } = req.body;
     try {
       const result = this.authService.refresh(refreshToken);
-      res.json({
-        message: "OK",
-        data: result, // hasil: { accessToken }
-      });
+      res.json(result);
     } catch (err: any) {
-      res.status(401).json({
-        message: err.message || "Token refresh failed",
-        data: null,
-      });
+      res.status(401).json({ message: err.message }); // biar feedback jelas
     }
   }
 }

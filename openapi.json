@@ -52,22 +52,13 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "accessToken": {
                       "type": "string",
-                      "example": "OK"
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
                     },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "accessToken": {
-                          "type": "string",
-                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                        },
-                        "refreshToken": {
-                          "type": "string",
-                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                        }
-                      }
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
                     }
                   }
                 }
@@ -84,10 +75,6 @@
                     "message": {
                       "type": "string",
                       "example": "Invalid credentials"
-                    },
-                    "data": {
-                      "type": "null",
-                      "example": null
                     }
                   }
                 }
