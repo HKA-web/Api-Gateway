@@ -15,106 +15,54 @@
   },
   "paths": {
     "/mssql/query": {
-	  "post": {
-		"tags": ["SQL Server 2000 Database Tool"],
-		"summary": "Run SELECT query on SQL Server 2000 (supports dynamic JSON filter)",
-		"description": "Execute a SELECT query with optional pagination and flexible JSON-based filtering (supports AND/OR/BETWEEN/LIKE).",
-		"security": [{ "bearerAuth": [] }],
-		"requestBody": {
-		  "required": true,
-		  "content": {
-			"application/json": {
-			  "schema": {
-				"type": "object",
-				"properties": {
-				  "sql": {
-					"type": "string",
-					"example": "SELECT * FROM users"
-				  },
-				  "skip": {
-					"type": "integer",
-					"example": 0
-				  },
-				  "take": {
-					"type": "integer",
-					"example": 10
-				  },
-				  "connection": {
-					"type": "string",
-					"example": "default"
-				  },
-				  "filter": {
-					"type": "object",
-					"description": "Optional JSON-based filter object. Supports nested AND/OR logic and operators: LIKE, IN, BETWEEN.",
-					"nullable": true,
-					"example": {
-					  "status": "aktif",
-					  "OR": {
-						"nama": "%agus%",
-						"kota": "%jakarta%"
-					  },
-					  "tanggal": ["2025-01-01", "2025-01-31"]
-					}
-				  }
-				},
-				"required": ["sql"]
-			  }
-			}
-		  }
-		},
-		"responses": {
-		  "200": {
-			"description": "Query result",
-			"content": {
-			  "application/json": {
-				"schema": {
-				  "type": "object",
-				  "properties": {
-					"statusCode": {
-					  "type": "integer",
-					  "example": 200
-					},
-					"message": {
-					  "type": "string",
-					  "example": "success"
-					},
-					"skip": {
-					  "type": "integer",
-					  "example": 0
-					},
-					"take": {
-					  "type": "integer",
-					  "example": 10
-					},
-					"totalCount": {
-					  "type": "integer",
-					  "example": 42
-					},
-					"data": {
-					  "type": "array",
-					  "items": { "type": "object" },
-					  "example": [
-						{
-						  "id": 1,
-						  "nama": "Agus",
-						  "kota": "Jakarta",
-						  "status": "aktif"
-						}
-					  ]
-					},
-					"columns": {
+      "post": {
+        "tags": ["SQL Server 2000 Database Tool"],
+        "summary": "Run SELECT query on SQL Server 2000",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sql": { "type": "string", "example": "SELECT * FROM sysobjects" },
+                  "skip": { "type": "integer", "example": 0 },
+                  "take": { "type": "integer", "example": 10 },
+                  "connection": { "type": "string", "example": "default" }
+                },
+                "required": ["sql"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": { "type": "string", "example": "" },
+                    "skip": { "type": "integer", "example": 0 },
+                    "take": { "type": "integer", "example": 10 },
+                    "totalCount": { "type": "integer", "example": 42 },
+                    "data": { "type": "array", "items": { "type": "object" } },
+                    "columns": {
 					  "type": "array",
 					  "items": { "type": "string" },
-					  "example": ["id", "nama", "kota", "status"]
+					  "example": ["id", "name", "created_at"]
 					}
-				  }
-				}
-			  }
-			}
-		  }
-		}
-	  }
-	},
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/mssql/insert": {
       "post": {
         "tags": ["SQL Server 2000 Database Tool"],

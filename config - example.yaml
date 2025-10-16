@@ -1,13 +1,13 @@
 jwt_access: rahasia-access
 jwt_refresh_secret: rahasia-refresh
-tokenduration: 5m #menit
-refreshduration: 1d #hari
+tokenduration: 5m
+refreshduration: 1d
 
 circuitBreaker:
-  timeout: 10000                 # ms
-  errorThresholdPercentage: 50  # %
-  resetTimeout: 5000             # ms
-  retries: 2                     # retry sebelum dianggap gagal
+  timeout: 10000
+  errorThresholdPercentage: 50
+  resetTimeout: 5000
+  retries: 2
   
 server:
   port: 4000
@@ -16,17 +16,9 @@ mssql:
   default:
     host: http://127.0.0.1:8001/mssql2000/
 
-pgsql:
-  default:
-    host: http://127.0.0.1:8002/pgsql/
-
-mysql:
-  default:
-    host: http://127.0.0.1:8003/mysql/
-
 redis:
   host: 127.0.0.1
   port: 6379
-  password: null        # bisa diisi jika Redis pakai password
+  password: null
   db: 0
-  ttl: 300               # default TTL untuk cache (detik)
+  ttl: 300

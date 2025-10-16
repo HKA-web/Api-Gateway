@@ -8,16 +8,10 @@ class QueryToolController {
     }
     async runMssqlQuery(req, res) {
         try {
-            const { sql, skip = 0, take = 100, connection = "default", filter, // boleh undefined
-             } = req.body;
-            if (!sql) {
-                return res.status(400).json({
-                    statusCode: 400,
-                    message: "Parameter 'sql' is required",
-                });
-            }
-            // kirim ke service (filter bisa undefined)
-            const result = await this.service.runMssqlQuery(sql, skip, take, connection, filter);
+            const { sql, skip = 0, take = 100, connection = "default" } = req.body;
+            if (!sql)
+                return res.status(400).json({ message: "sql is required" });
+            const result = await this.service.runMssqlQuery(sql, skip, take, connection);
             res.json(result);
         }
         catch (err) {

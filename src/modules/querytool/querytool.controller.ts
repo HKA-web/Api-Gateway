@@ -4,40 +4,19 @@ import { QueryToolService } from "./querytool.service";
 export class QueryToolController {
   private service = new QueryToolService();
 
-	async runMssqlQuery(req: Request, res: Response) {
-	  try {
-		const {
-		  sql,
-		  skip = 0,
-		  take = 100,
-		  connection = "default",
-		  filter, // boleh undefined
-		} = req.body;
+  async runMssqlQuery(req: Request, res: Response) {
+    try {
+      const { sql, skip = 0, take = 100, connection = "default" } = req.body;
+      if (!sql) return res.status(400).json({ message: "sql is required" });
 
-		if (!sql) {
-		  return res.status(400).json({
-			statusCode: 400,
-			message: "Parameter 'sql' is required",
-		  });
-		}
-
-		// kirim ke service (filter bisa undefined)
-		const result = await this.service.runMssqlQuery(
-		  sql,
-		  skip,
-		  take,
-		  connection,
-		  filter
-		);
-
-		res.json(result);
-	  } catch (err: any) {
+      const result = await this.service.runMssqlQuery(sql, skip, take, connection);
+      res.json(result);
+    } catch (err: any) {
 		const status = err?.statusCode ?? 500;
 		const message = err?.message ?? "Unexpected error";
 		res.status(status).json({ statusCode: status, message });
-	  }
-	}
-
+    }
+  }
 
   async runMssqlInsert(req: Request, res: Response) {
     try {
@@ -80,4 +59,5 @@ export class QueryToolController {
 		res.status(status).json({ statusCode: status, message });
     }
   }
+  
 }

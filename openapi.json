@@ -192,8 +192,7 @@
         "tags": [
           "SQL Server 2000 Database Tool"
         ],
-        "summary": "Run SELECT query on SQL Server 2000 (supports dynamic JSON filter)",
-        "description": "Execute a SELECT query with optional pagination and flexible JSON-based filtering (supports AND/OR/BETWEEN/LIKE).",
+        "summary": "Run SELECT query on SQL Server 2000",
         "security": [
           {
             "bearerAuth": []
@@ -208,7 +207,7 @@
                 "properties": {
                   "sql": {
                     "type": "string",
-                    "example": "SELECT * FROM users"
+                    "example": "SELECT * FROM sysobjects"
                   },
                   "skip": {
                     "type": "integer",
@@ -221,22 +220,6 @@
                   "connection": {
                     "type": "string",
                     "example": "default"
-                  },
-                  "filter": {
-                    "type": "object",
-                    "description": "Optional JSON-based filter object. Supports nested AND/OR logic and operators: LIKE, IN, BETWEEN.",
-                    "nullable": true,
-                    "example": {
-                      "status": "aktif",
-                      "OR": {
-                        "nama": "%agus%",
-                        "kota": "%jakarta%"
-                      },
-                      "tanggal": [
-                        "2025-01-01",
-                        "2025-01-31"
-                      ]
-                    }
                   }
                 },
                 "required": [
@@ -260,7 +243,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "success"
+                      "example": ""
                     },
                     "skip": {
                       "type": "integer",
@@ -278,15 +261,7 @@
                       "type": "array",
                       "items": {
                         "type": "object"
-                      },
-                      "example": [
-                        {
-                          "id": 1,
-                          "nama": "Agus",
-                          "kota": "Jakarta",
-                          "status": "aktif"
-                        }
-                      ]
+                      }
                     },
                     "columns": {
                       "type": "array",
@@ -295,9 +270,8 @@
                       },
                       "example": [
                         "id",
-                        "nama",
-                        "kota",
-                        "status"
+                        "name",
+                        "created_at"
                       ]
                     }
                   }
