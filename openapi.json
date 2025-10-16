@@ -192,7 +192,8 @@
         "tags": [
           "SQL Server 2000 Database Tool"
         ],
-        "summary": "Run SELECT query on SQL Server 2000",
+        "summary": "Run SELECT query on SQL Server 2000 (supports dynamic JSON filter)",
+        "description": "Execute a SELECT query with optional pagination and flexible JSON-based filtering (supports AND/OR/BETWEEN/LIKE).",
         "security": [
           {
             "bearerAuth": []
@@ -207,7 +208,7 @@
                 "properties": {
                   "sql": {
                     "type": "string",
-                    "example": "SELECT * FROM sysobjects"
+                    "example": "SELECT * FROM users"
                   },
                   "skip": {
                     "type": "integer",
@@ -220,6 +221,22 @@
                   "connection": {
                     "type": "string",
                     "example": "default"
+                  },
+                  "filter": {
+                    "type": "object",
+                    "description": "Optional JSON-based filter object. Supports nested AND/OR logic and operators: LIKE, IN, BETWEEN.",
+                    "nullable": true,
+                    "example": {
+                      "status": "aktif",
+                      "OR": {
+                        "nama": "%agus%",
+                        "kota": "%jakarta%"
+                      },
+                      "tanggal": [
+                        "2025-01-01",
+                        "2025-01-31"
+                      ]
+                    }
                   }
                 },
                 "required": [
@@ -243,7 +260,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": ""
+                      "example": "success"
                     },
                     "skip": {
                       "type": "integer",
@@ -261,7 +278,15 @@
                       "type": "array",
                       "items": {
                         "type": "object"
-                      }
+                      },
+                      "example": [
+                        {
+                          "id": 1,
+                          "nama": "Agus",
+                          "kota": "Jakarta",
+                          "status": "aktif"
+                        }
+                      ]
                     },
                     "columns": {
                       "type": "array",
@@ -270,8 +295,9 @@
                       },
                       "example": [
                         "id",
-                        "name",
-                        "created_at"
+                        "nama",
+                        "kota",
+                        "status"
                       ]
                     }
                   }
@@ -447,168 +473,6 @@
                     "message": {
                       "type": "string",
                       "example": "delete success"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/pgsql/": {
-      "post": {
-        "tags": [
-          "PgSQL Database Tool"
-        ],
-        "summary": "Run raw SQL on PostgreSQL",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "sql": {
-                    "type": "string",
-                    "example": "SELECT * FROM sc_mst.karyawan"
-                  },
-                  "skip": {
-                    "type": "integer",
-                    "example": 0
-                  },
-                  "take": {
-                    "type": "integer",
-                    "example": 10
-                  },
-                  "connection": {
-                    "type": "string",
-                    "example": "default",
-                    "description": "Connection endpoint to use (server-side, optional)"
-                  }
-                },
-                "required": [
-                  "sql"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Query result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "skip": {
-                      "type": "integer",
-                      "example": 0
-                    },
-                    "take": {
-                      "type": "integer",
-                      "example": 10
-                    },
-                    "totalCount": {
-                      "type": "integer",
-                      "example": 42
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mysql/": {
-      "post": {
-        "tags": [
-          "MySQL Database Tool"
-        ],
-        "summary": "Run raw SQL on MySQL",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "sql": {
-                    "type": "string",
-                    "example": "SELECT * FROM db"
-                  },
-                  "skip": {
-                    "type": "integer",
-                    "example": 0
-                  },
-                  "take": {
-                    "type": "integer",
-                    "example": 10
-                  },
-                  "connection": {
-                    "type": "string",
-                    "example": "default",
-                    "description": "Connection endpoint to use (server-side, optional)"
-                  }
-                },
-                "required": [
-                  "sql"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Query result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "skip": {
-                      "type": "integer",
-                      "example": 0
-                    },
-                    "take": {
-                      "type": "integer",
-                      "example": 10
-                    },
-                    "totalCount": {
-                      "type": "integer",
-                      "example": 42
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object"
-                      }
                     }
                   }
                 }

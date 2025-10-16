@@ -26,16 +26,85 @@ class QueryToolService {
             retries: config_1.config.circuitBreaker.retries
         });
     }
-    async runMssqlQuery(sql, skip = 0, take = 100, connectionName = "default") {
+    async runMssqlQuery(sql, skip = 0, take = 100, connectionName = "default", filter) {
+        // 🧱 Pastikan filter selalu object, walau tidak dikirim
+        filter = filter ?? {};
         const useRedis = true;
-        const cacheKey = (0, redisCache_1.getCacheKey)(sql, skip, take, `mssql:${connectionName}`);
+        const buildCondition = (obj, op = "AND") => {
+            if (!obj)
+                return "";
+            const normalConds = [];
+            const orConds = [];
+            const andConds = [];
+            for (const [key, val] of Object.entries(obj)) {
+                const lower = key.toLowerCase();
+                if (lower === "or" || lower === "and") {
+                    const nested = buildCondition(val, lower.toUpperCase());
+                    if (nested) {
+                        if (lower === "or")
+                            orConds.push(`(${nested})`);
+                        else
+                            andConds.push(`(${nested})`);
+                    }
+                    continue;
+                }
+                if (val === null || val === undefined || val === "")
+                    continue;
+                // 🧩 BETWEEN
+                if (Array.isArray(val) && val.length === 2) {
+                    const [a, b] = val.map((v) => typeof v === "string" ? `'${v.replace(/'/g, "''")}'` : v);
+                    normalConds.push(`[${key}] BETWEEN ${a} AND ${b}`);
+                    continue;
+                }
+                // 🧩 IN
+                if (Array.isArray(val) && val.length > 2) {
+                    const arr = val
+                        .map((v) => typeof v === "string" ? `'${v.replace(/'/g, "''")}'` : v)
+                        .join(",");
+                    normalConds.push(`[${key}] IN (${arr})`);
+                    continue;
+                }
+                // 🧩 LIKE
+                if (typeof val === "string" && val.includes("%")) {
+                    normalConds.push(`[${key}] LIKE '${val.replace(/'/g, "''")}'`);
+                    continue;
+                }
+                // 🧩 Default =
+                normalConds.push(typeof val === "string"
+                    ? `[${key}] = '${val.replace(/'/g, "''")}'`
+                    : `[${key}] = ${val}`);
+            }
+            // 🧠 Gabungkan semua kondisi
+            let parts = [];
+            if (normalConds.length > 0)
+                parts.push(normalConds.join(" AND "));
+            if (andConds.length > 0)
+                parts.push(andConds.join(" AND "));
+            if (orConds.length > 0) {
+                // kalau ada kondisi normal + OR → otomatis gabung pakai AND
+                const orPart = orConds.join(" OR ");
+                parts =
+                    normalConds.length > 0 || andConds.length > 0
+                        ? [...parts, `(${orPart})`]
+                        : [`(${orPart})`];
+            }
+            return parts.join(` ${op} `);
+        };
+        const where = buildCondition(filter);
+        const finalSql = sql + (where ? ` WHERE ${where}` : "");
+        const cacheKey = (0, redisCache_1.getCacheKey)(finalSql, skip, take, `mssql:${connectionName}`);
         const cached = await (0, redisCache_1.tryGetCache)(cacheKey, useRedis);
         if (cached)
             return { source: "redis", ...cached };
         const host = config_1.config.mssql[connectionName]?.host;
         if (!host)
             throw new Error(`MsSQL connection '${connectionName}' not found in config`);
-        const response = await this.callBackendWithBreaker.fire(`${host}query`, { sql, skip, take });
+        const response = await this.callBackendWithBreaker.fire(`${host}query`, {
+            sql: finalSql,
+            skip,
+            take,
+            filter,
+        });
         const result = {
             statusCode: response.statusCode ?? 200,
             message: "success",
@@ -43,7 +112,7 @@ class QueryToolService {
             take,
             totalCount: response.totalCount ?? response.rows?.length ?? 0,
             data: response.rows ?? [],
-            columns: response.columns ?? []
+            columns: response.columns ?? [],
         };
         await (0, redisCache_1.setCache)(cacheKey, result, useRedis);
         return { source: "backend", ...result };
