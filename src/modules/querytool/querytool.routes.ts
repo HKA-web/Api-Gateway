@@ -9,12 +9,9 @@ const controller = new QueryToolController();
 // SQL Server Endpoints
 // ---------------------
 
-router.post("/mssql/query", jwtAuth, controller.runMssqlQuery.bind(controller));
-
+router.post("/mssql/read", jwtAuth, controller.runMssqlRead.bind(controller));
 router.post("/mssql/insert", jwtAuth, controller.runMssqlInsert.bind(controller));
-
-router.post("/mssql/update", jwtAuth, controller.runMssqlUpdate.bind(controller));
-
-router.post("/mssql/delete", jwtAuth, controller.runMssqlDelete.bind(controller));
+router.put("/mssql/update", jwtAuth, controller.runMssqlUpdate.bind(controller));
+router.delete("/mssql/delete", jwtAuth, controller.runMssqlDelete.bind(controller));
 
 export default router;

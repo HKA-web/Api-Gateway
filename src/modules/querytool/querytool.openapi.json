@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Database Query Tools",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "components": {
     "securitySchemes": {
@@ -14,7 +14,7 @@
     }
   },
   "paths": {
-    "/mssql/query": {
+    "/mssql/read": {
       "post": {
         "tags": ["SQL Server 2000 Database Tool"],
         "summary": "Run SELECT query on SQL Server 2000",
@@ -26,7 +26,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "sql": { "type": "string", "example": "SELECT * FROM sysobjects" },
+                  "sql": {
+                    "type": "string",
+                    "example": "SELECT * FROM sysobjects"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": []
+                  },
                   "skip": { "type": "integer", "example": 0 },
                   "take": { "type": "integer", "example": 10 },
                   "connection": { "type": "string", "example": "default" }
@@ -44,17 +52,45 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "statusCode": { "type": "integer", "example": 200 },
-                    "message": { "type": "string", "example": "" },
+                    "statuscode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
                     "skip": { "type": "integer", "example": 0 },
                     "take": { "type": "integer", "example": 10 },
-                    "totalCount": { "type": "integer", "example": 42 },
-                    "data": { "type": "array", "items": { "type": "object" } },
+                    "totalcount": { "type": "integer", "example": 42 },
+                    "data": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    },
                     "columns": {
-					  "type": "array",
-					  "items": { "type": "string" },
-					  "example": ["id", "name", "created_at"]
-					}
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["id", "name", "created_at"]
+                    },
+                    "source": {
+                      "type": "string",
+                      "example": "backend",
+                      "description": "Indicates whether the result came from Redis cache or backend"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statuscode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Database error: Invalid object name 'd_transaksi..t_schedules'"
+                    }
                   }
                 }
               }
@@ -75,7 +111,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "sql": { "type": "string", "example": "INSERT INTO users (name,email) VALUES ('Andi','andi@test.com')" },
+                  "sql": {
+                    "type": "string",
+                    "example": "INSERT INTO users (name,email) VALUES ('Andi','andi@test.com')"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": []
+                  },
                   "connection": { "type": "string", "example": "default" }
                 },
                 "required": ["sql"]
@@ -84,15 +128,18 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Insert success",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "statusCode": { "type": "integer", "example": 201 },
-                    "message": { "type": "string", "example": "insert success" }
+                    "statuscode": { "type": "integer", "example": 201 },
+                    "message": {
+                      "type": "string",
+                      "example": "insert success"
+                    }
                   }
                 }
               }
@@ -102,7 +149,7 @@
       }
     },
     "/mssql/update": {
-      "post": {
+      "put": {
         "tags": ["SQL Server 2000 Database Tool"],
         "summary": "Run UPDATE query on SQL Server 2000",
         "security": [{ "bearerAuth": [] }],
@@ -113,7 +160,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "sql": { "type": "string", "example": "UPDATE users SET email='new@test.com' WHERE id=1" },
+                  "sql": {
+                    "type": "string",
+                    "example": "UPDATE users SET email='new@test.com' WHERE id=1"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": []
+                  },
                   "connection": { "type": "string", "example": "default" }
                 },
                 "required": ["sql"]
@@ -129,8 +184,11 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-					"statusCode": { "type": "integer", "example": 200 },
-                    "message": { "type": "string", "example": "update success" }
+                    "statuscode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "update success"
+                    }
                   }
                 }
               }
@@ -140,7 +198,7 @@
       }
     },
     "/mssql/delete": {
-      "post": {
+      "delete": {
         "tags": ["SQL Server 2000 Database Tool"],
         "summary": "Run DELETE query on SQL Server 2000",
         "security": [{ "bearerAuth": [] }],
@@ -151,7 +209,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "sql": { "type": "string", "example": "DELETE FROM users WHERE id=1" },
+                  "sql": {
+                    "type": "string",
+                    "example": "DELETE FROM users WHERE id=1"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": []
+                  },
                   "connection": { "type": "string", "example": "default" }
                 },
                 "required": ["sql"]
@@ -167,8 +233,11 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "statusCode": { "type": "integer", "example": 200 },
-                    "message": { "type": "string", "example": "delete success" }
+                    "statuscode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "delete success"
+                    }
                   }
                 }
               }

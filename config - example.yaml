@@ -14,7 +14,8 @@ server:
   
 mssql:
   default:
-    host: http://127.0.0.1:8001/mssql2000/
+    host: http://localhost:8001/api/querytool/
+    server: server1
 
 redis:
   host: 127.0.0.1
