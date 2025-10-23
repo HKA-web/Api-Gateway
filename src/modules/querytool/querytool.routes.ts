@@ -10,7 +10,7 @@ const controller = new QueryToolController();
 // ---------------------
 
 router.post("/mssql/read", jwtAuth, controller.runMssqlRead.bind(controller));
-router.post("/mssql/insert", jwtAuth, controller.runMssqlInsert.bind(controller));
+router.post("/mssql/create", jwtAuth, controller.runMssqlInsert.bind(controller));
 router.put("/mssql/update", jwtAuth, controller.runMssqlUpdate.bind(controller));
 router.delete("/mssql/delete", jwtAuth, controller.runMssqlDelete.bind(controller));
 

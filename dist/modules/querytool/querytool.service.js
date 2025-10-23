@@ -10,78 +10,115 @@ const redisCache_1 = require("../../utils/redisCache");
 const circuitBreaker_1 = require("../../utils/circuitBreaker");
 class QueryToolService {
     constructor() {
-        this.callBackendWithBreaker = (0, circuitBreaker_1.createCircuitBreaker)(async (url, payload) => {
-            const res = await axios_1.default.post(url, payload, { validateStatus: () => true });
-            // kalau error (status >= 400) → throw agar masuk ke breaker
-            if (res.status >= 400) {
-                throw {
-                    statusCode: res.status,
-                    message: res.data?.detail ?? res.data?.message ?? "Request failed",
-                    data: res.data ?? null
-                };
+        // ===================================================
+        // 🧠 Core Circuit Breaker Wrapper
+        // ===================================================
+        this.callBackendWithBreaker = (0, circuitBreaker_1.createCircuitBreaker)(async (url, payload, method = "post") => {
+            const res = await (0, axios_1.default)({
+                url,
+                method,
+                data: payload,
+                validateStatus: () => true,
+            });
+            const statusCode = res.data?.statuscode ?? res.status;
+            const message = res.data?.message ??
+                res.data?.detail ??
+                (statusCode >= 400 ? "Request failed" : "success");
+            if (statusCode >= 400) {
+                throw { statusCode, message, data: res.data ?? null };
             }
-            return { statusCode: res.status, ...res.data };
+            return { statusCode, message, ...res.data };
         }, {
             timeout: config_1.config.circuitBreaker.timeout,
-            retries: config_1.config.circuitBreaker.retries
+            retries: config_1.config.circuitBreaker.retries,
         });
     }
-    async runMssqlQuery(sql, skip = 0, take = 100, connectionName = "default") {
+    // ===================================================
+    // 🔧 Utility: Tentukan HTTP Method per Operasi
+    // ===================================================
+    getHttpMethod(operation) {
+        switch (operation.toLowerCase()) {
+            case "update":
+                return "put";
+            case "delete":
+                return "delete";
+            case "read":
+            case "create":
+            default:
+                return "post";
+        }
+    }
+    // ===================================================
+    // 🔧 Utility: Jalankan query generic berdasarkan operasi
+    // ===================================================
+    async executeMssql(operation, sql, connectionName = "default", skip = 0, take = 100) {
+        const conn = config_1.config.mssql[connectionName];
+        if (!conn?.host)
+            throw new Error(`MsSQL connection '${connectionName}' not found in config`);
+        const method = this.getHttpMethod(operation);
+        const url = `${conn.host}${operation}/`;
+        const payload = {
+            sql,
+            params: [],
+            server: conn.server ?? "default",
+        };
+        if (operation === "read") {
+            payload.skip = skip;
+            payload.take = take;
+        }
+        const response = await this.callBackendWithBreaker.fire(url, payload, method);
+        return response;
+    }
+    // ===================================================
+    // 🧩 READ (dengan Redis Cache)
+    // ===================================================
+    async runMssqlRead(sql, skip = 0, take = 100, connectionName = "default") {
         const useRedis = true;
         const cacheKey = (0, redisCache_1.getCacheKey)(sql, skip, take, `mssql:${connectionName}`);
         const cached = await (0, redisCache_1.tryGetCache)(cacheKey, useRedis);
         if (cached)
             return { source: "redis", ...cached };
-        const host = config_1.config.mssql[connectionName]?.host;
-        if (!host)
-            throw new Error(`MsSQL connection '${connectionName}' not found in config`);
-        const response = await this.callBackendWithBreaker.fire(`${host}query`, { sql, skip, take });
+        const response = await this.executeMssql("read", sql, connectionName, skip, take);
         const result = {
-            statusCode: response.statusCode ?? 200,
-            message: "success",
+            statusCode: response.statuscode ?? response.statusCode ?? 200,
+            message: response.message ?? "success",
             skip,
             take,
-            totalCount: response.totalCount ?? response.rows?.length ?? 0,
-            data: response.rows ?? [],
-            columns: response.columns ?? []
+            totalCount: response.totalcount ?? response.totalCount ?? 0,
+            data: response.data ?? response.rows ?? [],
+            columns: response.columns ?? [],
         };
         await (0, redisCache_1.setCache)(cacheKey, result, useRedis);
         return { source: "backend", ...result };
     }
+    // ===================================================
+    // 🧩 INSERT
+    // ===================================================
     async runMssqlInsert(sql, connectionName = "default") {
-        const host = config_1.config.mssql[connectionName]?.host;
-        if (!host)
-            throw new Error(`MsSQL connection '${connectionName}' not found in config`);
-        const response = await this.callBackendWithBreaker.fire(`${host}insert`, {
-            sql
-        });
+        const response = await this.executeMssql("create", sql, connectionName);
         return {
-            statusCode: response.statusCode ?? 201,
-            message: response.message ?? "insert success"
+            statusCode: response.statuscode ?? response.statusCode ?? 201,
+            message: response.message ?? "create success",
         };
     }
+    // ===================================================
+    // 🧩 UPDATE
+    // ===================================================
     async runMssqlUpdate(sql, connectionName = "default") {
-        const host = config_1.config.mssql[connectionName]?.host;
-        if (!host)
-            throw new Error(`MsSQL connection '${connectionName}' not found in config`);
-        const response = await this.callBackendWithBreaker.fire(`${host}update`, {
-            sql
-        });
+        const response = await this.executeMssql("update", sql, connectionName);
         return {
-            statusCode: response.statusCode ?? 200,
-            message: response.message ?? "update success"
+            statusCode: response.statuscode ?? response.statusCode ?? 200,
+            message: response.message ?? "update success",
         };
     }
+    // ===================================================
+    // 🧩 DELETE
+    // ===================================================
     async runMssqlDelete(sql, connectionName = "default") {
-        const host = config_1.config.mssql[connectionName]?.host;
-        if (!host)
-            throw new Error(`MsSQL connection '${connectionName}' not found in config`);
-        const response = await this.callBackendWithBreaker.fire(`${host}delete`, {
-            sql
-        });
+        const response = await this.executeMssql("delete", sql, connectionName);
         return {
-            statusCode: response.statusCode ?? 200,
-            message: response.message ?? "delete success"
+            statusCode: response.statuscode ?? response.statusCode ?? 200,
+            message: response.message ?? "delete success",
         };
     }
 }

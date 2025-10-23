@@ -99,7 +99,7 @@
         }
       }
     },
-    "/mssql/insert": {
+    "/mssql/create": {
       "post": {
         "tags": ["SQL Server 2000 Database Tool"],
         "summary": "Run INSERT query on SQL Server 2000",
