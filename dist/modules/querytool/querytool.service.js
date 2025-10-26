@@ -7,32 +7,7 @@ exports.QueryToolService = void 0;
 const axios_1 = __importDefault(require("axios"));
 const config_1 = require("../../utils/config");
 const redisCache_1 = require("../../utils/redisCache");
-const circuitBreaker_1 = require("../../utils/circuitBreaker");
 class QueryToolService {
-    constructor() {
-        // ===================================================
-        // 🧠 Core Circuit Breaker Wrapper
-        // ===================================================
-        this.callBackendWithBreaker = (0, circuitBreaker_1.createCircuitBreaker)(async (url, payload, method = "post") => {
-            const res = await (0, axios_1.default)({
-                url,
-                method,
-                data: payload,
-                validateStatus: () => true,
-            });
-            const statusCode = res.data?.statuscode ?? res.status;
-            const message = res.data?.message ??
-                res.data?.detail ??
-                (statusCode >= 400 ? "Request failed" : "success");
-            if (statusCode >= 400) {
-                throw { statusCode, message, data: res.data ?? null };
-            }
-            return { statusCode, message, ...res.data };
-        }, {
-            timeout: config_1.config.circuitBreaker.timeout,
-            retries: config_1.config.circuitBreaker.retries,
-        });
-    }
     // ===================================================
     // 🔧 Utility: Tentukan HTTP Method per Operasi
     // ===================================================
@@ -66,8 +41,21 @@ class QueryToolService {
             payload.skip = skip;
             payload.take = take;
         }
-        const response = await this.callBackendWithBreaker.fire(url, payload, method);
-        return response;
+        // 👇 Tidak pakai breaker.fire(), middleware breaker di route yang handle
+        const res = await (0, axios_1.default)({
+            url,
+            method,
+            data: payload,
+            validateStatus: () => true,
+        });
+        const statusCode = res.data?.statuscode ?? res.status;
+        const message = res.data?.message ??
+            res.data?.detail ??
+            (statusCode >= 400 ? "Request failed" : "success");
+        if (statusCode >= 400) {
+            throw { statusCode, message, data: res.data ?? null };
+        }
+        return { statusCode, message, ...res.data };
     }
     // ===================================================
     // 🧩 READ (dengan Redis Cache)

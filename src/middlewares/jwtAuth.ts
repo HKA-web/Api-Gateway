@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { config } from "../utils/config";
 
-const ACCESS_SECRET = process.env.JWT_SECRET || "rahasia-access";
+const ACCESS_SECRET = config.jwt_access || "rahasia-access";
 
 export interface AuthRequest extends Request {
   user?: string | JwtPayload;

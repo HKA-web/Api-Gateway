@@ -16,9 +16,8 @@ const DUMMY_USER = {
 class AuthService {
     login(username, password) {
         if (username === DUMMY_USER.username && password === DUMMY_USER.password) {
-            const accessToken = jsonwebtoken_1.default.sign({ username }, ACCESS_SECRET, { expiresIn: config_1.config.tokenduration || "15m" });
-            const refreshToken = jsonwebtoken_1.default.sign({ username }, REFRESH_SECRET, { expiresIn: config_1.config.refreshduration || "7d" });
-            // Idealnya simpan refreshToken di DB/Redis biar bisa di-revoke
+            const accessToken = jsonwebtoken_1.default.sign({ username }, ACCESS_SECRET, { expiresIn: config_1.config.token_duration || "15m" });
+            const refreshToken = jsonwebtoken_1.default.sign({ username }, REFRESH_SECRET, { expiresIn: config_1.config.refresh_duration || "7d" });
             return { accessToken, refreshToken };
         }
         throw new Error("Invalid credentials");
@@ -30,7 +29,6 @@ class AuthService {
             return { accessToken: newAccessToken };
         }
         catch (err) {
-            // Jangan balikin Invalid credentials, tapi lebih jelas
             throw new Error("Invalid or expired refresh token");
         }
     }

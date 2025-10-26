@@ -2,32 +2,27 @@
 
 Fungsi utama API Gateway
 
-- Entry point tunggal microservice
+- Entry point tunggal.
 
-- Semua client (web, mobile, aplikasi lain) cukup mengakses satu endpoint utama untuk berkomunikasi ke microservice.
+- Semua client (web, mobile, aplikasi lain) cukup mengakses satu endpoint utama untuk berkomunikasi.
 
-- Contoh: https://api.mycompany.com/ → gateway yang menentukan microservice mana yang dipanggil.
+- Routing.
 
-- Routing / load balancing
-
-- Gateway meneruskan request ke microservice yang sesuai.
-
-# Perhatian
+# Pemasangan
 
 - Clone Project:
 ```
-git clone https://github.com/HKA-web/api-gateway.git
+git clone https://github.com/HKA-web/Api-Gateway.git
 git submodule update --init --recursive
 git pull --recurse-submodules
 ```
-
-- Rubah nama config - example.yaml > config.yaml .
+- Rubah nama config-example.yaml > config.yaml .
 
 - Klik 2x pada install.bat .
    
-# Pengaturan Ngrok
+# Jakankan
 
-Pastikan sudah menjalankan install.bat, kalau sudah klik 2x file cwd.bat:
+Pastikan install.bat sudah sukses, kalau sudah klik 2x pada cwd.bat, pada `opsi tindakan pilih 2`:
 ```
 ===============================================
  Portable Node.js + Yarn Environment
@@ -41,17 +36,35 @@ Pilih tindakan:
   1. Buka interactive shell (cmd)
   2. Jalankan "yarn start"
   3. Keluar
-Choice [1-3]:1
+Choice [1-3]: 1
 ```
 
-Jalankan perintah ini:
+# Jakankan Dengan Ngrok
+
+Pastikan install.bat sudah sukses, kalau sudah klik 2x pada cwd.bat, pada `opsi tindakan pilih 1`:
+```
+===============================================
+ Portable Node.js + Yarn Environment
+-----------------------------------------------
+ Node exe path: "C:\WA-BOT\bin\nodejs\node.exe"
+-----------------------------------------------
+ Node Version: v20.18.0
+===============================================
+
+Pilih tindakan:
+  1. Buka interactive shell (cmd)
+  2. Jalankan "yarn start"
+  3. Keluar
+Choice [1-3]: 1
+```
+
+>Jalankan perintah ini:
 ```
 .\node_modules\.bin\ngrok config add-authtoken <YOUR-TOKEN>
 ```
+>Jika sukses, jalankan ngrok dengan cara klik 2x ngrok.bat
 
-Jika sukses, jalankan ngrok dengan cara klik 2x ngrok.bat
-
-# Struktur Folder
+# Struktur
 ```
 api-gateway/
 ├── bin/                                # utilities
@@ -73,11 +86,11 @@ api-gateway/
 │   ├── middlewares/
 │   │   └── logger.ts
 │   │   └── jwtAuth.ts
+│   │   └── retryRequest.ts
 │   │
 │   ├── utils/
 │   │   └── config.ts                   # env/config global
 │   │   └── routeLoader.ts
-│   │   └── circuitBreaker.ts
 │   │   └── redisCache.ts
 │   │
 │   ├── index.ts                        # entry point
@@ -86,22 +99,22 @@ api-gateway/
 
 # Arsitektur
 ```
-             +-------------------+
-             |   API Gateway     |  <-- Node.js + Express
-             |-------------------|
-             | src/index.ts      |
-             | src/generate-openapi.ts |
-             +-------------------+
+             +--------------------------+
+             |   API Gateway     		|
+             |--------------------------|
+             | src/index.ts      		|
+             | src/generate-openapi.ts 	|
+             +--------------------------+
                       |
         -------------------------------------------------------------------------
         |                               |										|
-        v                               v										v	
-+--------------------+            +-----------------------+			+-----------------------+
-| modules/querytool  |            | middlewares/logger	  | 		| utils/config			|
-|					 |			  | middlewares/jwtAuth	  |			| utils/redisCache		|						
-|					 |			  |        				  |			| utils/circuitBreaker	|							
-|					 |			  |        				  |			| utils/routeLoader		|						
-|--------------------|            +-----------------------+			+-----------------------+
+        v                               v										v
+		modules							middlewares								utils
++-------------------+            +----------------------+			+-----------------------+
+| querytool  		|            | logger	  			| 			| config				|
+|					|			 | jwtAuth	  			|			| redisCache			|						
+|					|			 | retryRequest	  		|			| utils/routeLoader		|										
++-------------------+            +----------------------+			+-----------------------+
 		|
 		v
 | querytool.controller.ts       <-- logging / request
@@ -114,9 +127,9 @@ api-gateway/
         v
    +------------+
    | DB Service |
-   | (MSSQL,   	|
+   | MSSQL   	|
    | PostgreSQL	|
-   | MySQL)    	|
+   | MySQL    	|
    +------------+
         ^
         |
@@ -130,11 +143,3 @@ api-gateway/
    | dist/          | <-- hasil build TS (production)
    +----------------+
 ```
-
-# Alur Kerja
-
-1. Gateway kirim request ke backend (axios + breaker)
-2. Timeout 5 (*Sesuai setup) detik → jika backend lambat, langsung throw
-3. Retry 2x (*Sesuai setup) → jika masih gagal, throw error
-4. Circuit breaker track error rate → jika terlalu tinggi, buka breaker
-5. Client dapat response error (timeout / service unavailable)

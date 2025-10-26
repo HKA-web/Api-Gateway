@@ -16,17 +16,14 @@ export class AuthService {
       const accessToken = jwt.sign(
 		  { username },
 		  ACCESS_SECRET,
-		  { expiresIn: config.tokenduration || "15m" }
+		  { expiresIn: config.token_duration || "15m" }
 		);
 
 		const refreshToken = jwt.sign(
 		  { username },
 		  REFRESH_SECRET,
-		  { expiresIn: config.refreshduration || "7d" }
+		  { expiresIn: config.refresh_duration || "7d" }
 		);
-
-
-      // Idealnya simpan refreshToken di DB/Redis biar bisa di-revoke
       return { accessToken, refreshToken };
     }
     throw new Error("Invalid credentials");
@@ -42,7 +39,6 @@ export class AuthService {
       );
       return { accessToken: newAccessToken };
     } catch (err) {
-      // Jangan balikin Invalid credentials, tapi lebih jelas
       throw new Error("Invalid or expired refresh token");
     }
   }

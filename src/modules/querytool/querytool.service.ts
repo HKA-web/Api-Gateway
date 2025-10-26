@@ -1,39 +1,8 @@
 import axios, { Method } from "axios";
 import { config } from "../../utils/config";
 import { getCacheKey, setCache, tryGetCache } from "../../utils/redisCache";
-import { createCircuitBreaker } from "../../utils/circuitBreaker";
 
 export class QueryToolService {
-  // ===================================================
-  // 🧠 Core Circuit Breaker Wrapper
-  // ===================================================
-  private callBackendWithBreaker = createCircuitBreaker(
-    async (url: string, payload: any, method: Method = "post") => {
-      const res = await axios({
-        url,
-        method,
-        data: payload,
-        validateStatus: () => true,
-      });
-
-      const statusCode = res.data?.statuscode ?? res.status;
-      const message =
-        res.data?.message ??
-        res.data?.detail ??
-        (statusCode >= 400 ? "Request failed" : "success");
-
-      if (statusCode >= 400) {
-        throw { statusCode, message, data: res.data ?? null };
-      }
-
-      return { statusCode, message, ...res.data };
-    },
-    {
-      timeout: config.circuitBreaker.timeout,
-      retries: config.circuitBreaker.retries,
-    }
-  );
-
   // ===================================================
   // 🔧 Utility: Tentukan HTTP Method per Operasi
   // ===================================================
@@ -77,8 +46,25 @@ export class QueryToolService {
       payload.take = take;
     }
 
-    const response = await this.callBackendWithBreaker.fire(url, payload, method);
-    return response;
+    // 👇 Tidak pakai breaker.fire(), middleware breaker di route yang handle
+    const res = await axios({
+      url,
+      method,
+      data: payload,
+      validateStatus: () => true,
+    });
+
+    const statusCode = res.data?.statuscode ?? res.status;
+    const message =
+      res.data?.message ??
+      res.data?.detail ??
+      (statusCode >= 400 ? "Request failed" : "success");
+
+    if (statusCode >= 400) {
+      throw { statusCode, message, data: res.data ?? null };
+    }
+
+    return { statusCode, message, ...res.data };
   }
 
   // ===================================================

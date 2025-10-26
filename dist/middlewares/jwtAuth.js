@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtAuth = jwtAuth;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const ACCESS_SECRET = process.env.JWT_SECRET || "rahasia-access";
+const config_1 = require("../utils/config");
+const ACCESS_SECRET = config_1.config.jwt_access || "rahasia-access";
 function jwtAuth(req, res, next) {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
